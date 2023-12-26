@@ -81,6 +81,9 @@ set(COMPONENT_SRCS
 "drivers/imu/imu.c"
 "drivers/imu/lsm6ds3.c"
 "drivers/imu/ahrs.c"
+
+"onellight/onellight.c"
+"onellight/led_white.c"
 )
 
 set(COMPONENT_ADD_INCLUDEDIRS
@@ -99,6 +102,7 @@ set(COMPONENT_ADD_INCLUDEDIRS
 "drivers"
 "drivers/bme280"
 "drivers/imu"
+"onellight"
 )
 
 register_component()

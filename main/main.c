@@ -46,6 +46,7 @@
 #include "lispif.h"
 #include "bms.h"
 #include "ble/custom_ble.h"
+#include "onellight.h"
 
 #include <string.h>
 #include <sys/time.h>
@@ -113,6 +114,8 @@ void app_main(void) {
 	HW_INIT_HOOK();
 	lispif_init();
 #endif
+
+	onellight_init();
 
 	mempools_init();
 	bms_init();

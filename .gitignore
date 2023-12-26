@@ -5,3 +5,5 @@ build
 esp_idf_components
 sdkconfig.old
 .vscode
+.cache
+esp-idf-v5.0.2
