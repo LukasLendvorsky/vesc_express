@@ -3,6 +3,8 @@
 #include <stdio.h>
 #include "driver/ledc.h"
 #include "esp_err.h"
+#include <math.h>
+#include "esp_log.h"
 
 #define LEDC_TIMER     LEDC_TIMER_0
 #define LEDC_MODE      LEDC_LOW_SPEED_MODE
@@ -36,6 +38,8 @@ void led_white_init() {
 		.hpoint     = 0
 	};
 	ESP_ERROR_CHECK(ledc_channel_config(&front_config));
+	
+ 	ESP_LOGI("white", "ledc_channel_config 1");
 
 	// Configure front led channel
 	ledc_channel_config_t rear_config = {
@@ -48,11 +52,17 @@ void led_white_init() {
 		.hpoint     = 0
 	};
 	ESP_ERROR_CHECK(ledc_channel_config(&rear_config));
+
+ 	ESP_LOGI("white", "ledc_channel_config 2");
 }
 
 void led_white_set(uint8_t channel, float value) {
+	uint32_t value_int = roundf(value * 1024);
 	ESP_ERROR_CHECK(
-		ledc_set_duty(LEDC_MODE, LEDC_FRONT_CHANNEL + channel, value * 1024)
+		ledc_set_duty(LEDC_MODE, LEDC_FRONT_CHANNEL + channel, value_int)
 	);
-	ESP_ERROR_CHECK(ledc_update_duty(LEDC_MODE, LEDC_FRONT_CHANNEL));
+	ESP_ERROR_CHECK(ledc_update_duty(LEDC_MODE, LEDC_FRONT_CHANNEL + channel));
+
+       
+ 	ESP_LOGI("white", "set channel %u val:%lu",channel,  value_int);
 }

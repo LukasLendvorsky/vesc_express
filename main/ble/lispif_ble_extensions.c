@@ -370,7 +370,7 @@ static parse_lbm_result_t parse_lbm_chr_def(
 
 	esp_bt_uuid_t uuid;
 	esp_gatt_char_prop_t prop = 0;
-	uint16_t max_len;
+	uint16_t max_len = 0;
 	uint16_t value_len;
 	uint8_t *default_value;
 

@@ -115,7 +115,6 @@ void app_main(void) {
 	lispif_init();
 #endif
 
-	onellight_init();
 
 	mempools_init();
 	bms_init();
@@ -150,6 +149,8 @@ void app_main(void) {
 #ifdef HW_HAS_ADC
 	adc_init();
 #endif
+
+	onellight_init();
 
 #ifndef HW_EARLY_LBM_INIT
 	HW_INIT_HOOK();
