@@ -84,6 +84,7 @@ set(COMPONENT_SRCS
 
 "onellight/onellight.c"
 "onellight/led_white.c"
+"onellight/led_rgb.c"
 )
 
 set(COMPONENT_ADD_INCLUDEDIRS
