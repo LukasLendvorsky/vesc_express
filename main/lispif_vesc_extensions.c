@@ -2767,6 +2767,7 @@ static lbm_value ext_rgbled_deinit(lbm_value *args, lbm_uint argn) {
 }
 
 static lbm_value ext_rgbled_init(lbm_value *args, lbm_uint argn) {
+	return ENC_SYM_TRUE;
 	LBM_CHECK_ARGN_NUMBER(2);
 
 	int pin = lbm_dec_as_i32(args[0]);

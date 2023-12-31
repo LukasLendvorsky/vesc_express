@@ -1,6 +1,9 @@
 #pragma once
 #include <stdint.h>
 #include <stdlib.h>
+#include "led_strip.h"
+
+extern led_strip_handle_t my_strip;
 
 void led_rgb_init();
 
