@@ -82,9 +82,10 @@ set(COMPONENT_SRCS
 "drivers/imu/lsm6ds3.c"
 "drivers/imu/ahrs.c"
 
-"onellight/onellight.c"
-"onellight/led_white.c"
+"onellight/onellight.cpp"
+"onellight/led_white.cpp"
 "onellight/led_rgb.cpp"
+"onellight/onelight_control.cpp"
 )
 
 set(COMPONENT_ADD_INCLUDEDIRS

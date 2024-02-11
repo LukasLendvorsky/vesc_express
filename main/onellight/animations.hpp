@@ -2,7 +2,9 @@
 #include "led_strip.h"
 #include "led_strip_spi.h"
 #include <stdint.h>
-#include "freertos/FreeRTOS.h"
+extern "C"{
+	#include "freertos/task.h"
+}
 
 class Animation {
   public:
@@ -56,11 +58,7 @@ class BlinkAnimation : public Animation {
             last_change_time = currentTime;
             on = true;
         }
-
         uint32_t value = on ? 255 : 0;
-
-        ESP_LOGI("blink", "current: %lu, last_change_time=%lu, value=%lu",currentTime, last_change_time, value);
-
 		for (int j = 0; j < num_leds; j += 1) {
 			ESP_ERROR_CHECK(led_strip_set_pixel_hsv(handle, j, hue, 255, value));
 		}
@@ -68,8 +66,6 @@ class BlinkAnimation : public Animation {
 	}
 
   private:
-
-    uint16_t start_rgb;
     uint16_t hue;
 
     uint32_t on_ms;
