@@ -15,7 +15,7 @@ extern "C"{
 void onellight_task(void *) {
 	while (1) {
 		onelight_control_update();
-		//led_update_animations();
+		led_rgb_update_animations();
 		vTaskDelay(pdMS_TO_TICKS(UPDATE_PERIOD));
 	}
 }

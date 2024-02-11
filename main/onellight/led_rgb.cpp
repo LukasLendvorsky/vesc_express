@@ -65,7 +65,7 @@ void led_rgb_init(){
 }
 
 
-void led_update_animations(){
+void led_rgb_update_animations(){
     update_strip(front_strip_cfg,front_animation ? *front_animation : null_animation_front_rear);
     update_strip(rear_strip_cfg, rear_animation ? *rear_animation : null_animation_front_rear);
     update_strip(hid_strip_cfg, hid_animation ? *hid_animation : null_animation_hid);

@@ -40,6 +40,40 @@ void handle_status_wait_for_device(){
 }
 
 
+enum class Direction{Front, Back, Stoppped};
+
+
+Direction detect_direction(can_status_msg * msg){
+    static constexpr uint32_t DIRECTION_SMOOTHING_TIME = 500;
+
+    Direction apparent_direction =  Direction::Stoppped;
+    if (msg->duty == 0.0 || msg->current == 0.0) apparent_direction = Direction::Stoppped;
+    else if (msg->rpm  > 1) apparent_direction = Direction::Front;
+    else if (msg->rpm  < -1) apparent_direction = Direction::Back;
+    
+    static Direction direction = Direction::Stoppped;
+    static Direction new_direction = Direction::Stoppped;
+    uint32_t new_direction_change_time = 0;
+
+
+    // detected direction is different that last detected change
+    if (apparent_direction != new_direction)
+    {
+        new_direction = apparent_direction;
+        new_direction_change_time = xTaskGetTickCount();
+    }
+
+    if (new_direction != direction && (xTaskGetTickCount() - new_direction_change_time) >= DIRECTION_SMOOTHING_TIME){
+        direction = new_direction;
+        new_direction_change_time = xTaskGetTickCount();
+    }
+
+    return direction;
+}
+
+
+
+
 
 
 void handle_status_operational(){
@@ -51,19 +85,27 @@ void handle_status_operational(){
         return;
     }
 
-    if (msg->rpm > 1) {
+    auto direction = detect_direction(msg);
+
+    if (direction == Direction::Front) {
+        ESP_LOGI("control", "front");
         led_white_set(LEDC_FRONT_CHANNEL, WHITE_MAX_INTENSITY);
         led_white_set(LEDC_REAR_CHANNEL, 0);
         led_rgb_set_animation(LedRgbType::front, &null_animation_front_rear);
         led_rgb_set_animation(LedRgbType::rear, &blink_animation);
-    } else if (msg->rpm < 1) {
+    } else if (direction == Direction::Back) {
+        ESP_LOGI("control", "rear");
         led_white_set(LEDC_FRONT_CHANNEL, 0);
         led_white_set(LEDC_REAR_CHANNEL, WHITE_MAX_INTENSITY);
         led_rgb_set_animation(LedRgbType::front, &blink_animation);
         led_rgb_set_animation(LedRgbType::rear, &null_animation_front_rear);
+    } else if (direction == Direction::Stoppped) {
+        ESP_LOGI("control", "stoped");
+        led_white_set(LEDC_FRONT_CHANNEL, 0);
+        led_white_set(LEDC_REAR_CHANNEL, 0);
+        led_rgb_set_animation(LedRgbType::front, &null_animation_front_rear);
+        led_rgb_set_animation(LedRgbType::rear, &null_animation_front_rear);
     }
-
-    
 }
 
 
