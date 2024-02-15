@@ -42,13 +42,15 @@ Animation * hid_animation;
 NullAnimation null_animation_front_rear = NullAnimation(HEADLIGHT_NUM_LEDS);
 NullAnimation null_animation_hid = NullAnimation(HID_NUM_LEDS);
 BlinkAnimation blink_animation = BlinkAnimation(10, 0, 100, 100);
+LarsonAnimation larson_animation = LarsonAnimation(10, 0);
 
 static led_strip_handle_t handle;
 
 void update_strip(uint8_t strip_gpio, Animation & animation){
-    // connect GPIO of current led strip to 
+    // connect GPIO of current led strip to SPI, update, then connect it back to GPIO output
     gpio_iomux_out(strip_gpio, SPI2_FUNC_NUM, false);
     animation.update(handle);
+    ESP_ERROR_CHECK(led_strip_refresh(handle));
     gpio_iomux_out(strip_gpio, PIN_FUNC_GPIO, false);
 }
 
@@ -60,6 +62,7 @@ void led_rgb_init(){
 
     ESP_ERROR_CHECK(led_strip_new_spi_device(&strip_cfg, &spi_config, &handle));
 
+    // set all GPIOs to low, when updating, switch one led strip to SPI output and update it
     gpio_set_direction((gpio_num_t)front_led_strip_gpio, gpio_mode_t::GPIO_MODE_OUTPUT);
     gpio_set_level((gpio_num_t)front_led_strip_gpio, 0);
     gpio_set_direction((gpio_num_t)rear_led_strip_gpio, gpio_mode_t::GPIO_MODE_OUTPUT);

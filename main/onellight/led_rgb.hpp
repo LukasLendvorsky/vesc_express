@@ -23,3 +23,4 @@ void led_rgb_set_animation(LedRgbType, Animation *);
 extern NullAnimation null_animation_front_rear;
 extern NullAnimation null_animation_hid;
 extern BlinkAnimation blink_animation;
+extern LarsonAnimation larson_animation;

@@ -92,12 +92,12 @@ void handle_status_operational(){
         led_white_set(LEDC_FRONT_CHANNEL, WHITE_MAX_INTENSITY);
         led_white_set(LEDC_REAR_CHANNEL, 0);
         led_rgb_set_animation(LedRgbType::front, &null_animation_front_rear);
-        led_rgb_set_animation(LedRgbType::rear, &blink_animation);
+        led_rgb_set_animation(LedRgbType::rear, &larson_animation);
     } else if (direction == Direction::Back) {
         ESP_LOGI("control", "rear");
         led_white_set(LEDC_FRONT_CHANNEL, 0);
         led_white_set(LEDC_REAR_CHANNEL, WHITE_MAX_INTENSITY);
-        led_rgb_set_animation(LedRgbType::front, &blink_animation);
+        led_rgb_set_animation(LedRgbType::front, &larson_animation);
         led_rgb_set_animation(LedRgbType::rear, &null_animation_front_rear);
     } else if (direction == Direction::Stoppped) {
         ESP_LOGI("control", "stoped");

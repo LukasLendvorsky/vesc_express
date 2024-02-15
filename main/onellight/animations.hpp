@@ -2,6 +2,7 @@
 #include "led_strip.h"
 #include "led_strip_spi.h"
 #include <stdint.h>
+#include <algorithm>
 extern "C"{
 	#include "freertos/task.h"
 }
@@ -37,7 +38,6 @@ class RainbowAnimation : public Animation {
 				(start_rgb + (int)(360.0f * ((float)j / num_leds))) % 360;
 			ESP_ERROR_CHECK(led_strip_set_pixel_hsv(handle, j, hue, 255, 255));
 		}
-		ESP_ERROR_CHECK(led_strip_refresh(handle));
 		start_rgb += 10;
 	}
 
@@ -62,7 +62,6 @@ class BlinkAnimation : public Animation {
 		for (int j = 0; j < num_leds; j += 1) {
 			ESP_ERROR_CHECK(led_strip_set_pixel_hsv(handle, j, hue, 255, value));
 		}
-		ESP_ERROR_CHECK(led_strip_refresh(handle));
 	}
 
   private:
@@ -73,4 +72,46 @@ class BlinkAnimation : public Animation {
 
     bool on = false;
     uint32_t last_change_time = 0;
+};
+
+
+
+class LarsonAnimation : public Animation {
+public:
+	LarsonAnimation(uint32_t num_leds, uint16_t hue) : Animation(num_leds), hue(hue){}
+
+
+	virtual void update(led_strip_handle_t handle) override {
+		// step (0-1)
+		float step = (pdTICKS_TO_MS( xTaskGetTickCount() ) % period) / (float) period;
+
+		// make step go from 0 to 1, then back to 0
+		step *= 2;
+		if (step > 1) step = 2-step;
+		// center of larson
+		float center = side_offset + (num_leds - 2*side_offset)*step;
+
+		// just update leds
+		for (int j = 0; j < num_leds; j += 1) {
+			float dist = std::abs((float)j - center);
+			uint8_t value = 0;
+			if (dist <= wideness_full_brightness/2) {
+				value = 255;
+			} else if (dist <= wideness_total/2) {
+				value = 255 * ((wideness_total/2) - dist) / (wideness_total/2);
+			}
+			ESP_ERROR_CHECK(led_strip_set_pixel_hsv(handle, j, hue, 255, value));
+		}
+
+
+	}
+
+private:
+    uint16_t hue;
+
+	uint32_t period = 1000;
+	float side_offset = 3;
+	float wideness_full_brightness = 4;
+	float wideness_total = 10;
+
 };
