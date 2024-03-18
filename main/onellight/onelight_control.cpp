@@ -10,10 +10,7 @@ extern "C" {
     #include "main.h"
 }
 
-
-
-
-
+#define USING_FIXED_LED_COLORS
 
 enum class Status{
   wait_for_device,  
@@ -89,16 +86,28 @@ void handle_status_operational(){
 
     if (direction == Direction::Front) {
         ESP_LOGI("control", "front");
-        led_white_set(LEDC_FRONT_CHANNEL, WHITE_MAX_INTENSITY);
-        led_white_set(LEDC_REAR_CHANNEL, 0);
-        led_rgb_set_animation(LedRgbType::front, &null_animation_front_rear);
-        led_rgb_set_animation(LedRgbType::rear, &larson_animation);
+        #ifndef USING_FIXED_LED_COLORS
+            led_white_set(LEDC_FRONT_CHANNEL, WHITE_MAX_INTENSITY);
+            led_white_set(LEDC_REAR_CHANNEL, 0);
+            led_rgb_set_animation(LedRgbType::front, &null_animation_front_rear);
+            led_rgb_set_animation(LedRgbType::rear, &larson_animation);
+        #else
+            led_white_set(LEDC_FRONT_CHANNEL, WHITE_MAX_INTENSITY);
+            led_white_set(LEDC_REAR_CHANNEL, WHITE_MAX_INTENSITY);
+        #endif
     } else if (direction == Direction::Back) {
         ESP_LOGI("control", "rear");
-        led_white_set(LEDC_FRONT_CHANNEL, 0);
-        led_white_set(LEDC_REAR_CHANNEL, WHITE_MAX_INTENSITY);
-        led_rgb_set_animation(LedRgbType::front, &larson_animation);
-        led_rgb_set_animation(LedRgbType::rear, &null_animation_front_rear);
+        #ifndef USING_FIXED_LED_COLORS
+            led_white_set(LEDC_FRONT_CHANNEL, 0);
+            led_white_set(LEDC_REAR_CHANNEL, WHITE_MAX_INTENSITY);
+            led_rgb_set_animation(LedRgbType::front, &larson_animation);
+            led_rgb_set_animation(LedRgbType::rear, &null_animation_front_rear);
+        #else
+            led_white_set(LEDC_FRONT_CHANNEL, WHITE_MAX_INTENSITY);
+            led_white_set(LEDC_REAR_CHANNEL, WHITE_MAX_INTENSITY);
+        #endif
+
+
     } else if (direction == Direction::Stoppped) {
         ESP_LOGI("control", "stoped");
         led_white_set(LEDC_FRONT_CHANNEL, 0);
