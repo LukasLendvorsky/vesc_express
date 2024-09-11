@@ -9,8 +9,7 @@ extern "C" {
     #include "comm_can.h"
     #include "main.h"
 }
-
-#define USING_FIXED_LED_COLORS
+#include "config.hpp"
 
 enum class Status{
   wait_for_device,  
