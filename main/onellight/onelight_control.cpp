@@ -82,38 +82,57 @@ void handle_status_operational(){
     }
 
     auto direction = detect_direction(msg);
+    
+
+    uint32_t new_front_intensity;
+    uint32_t new_rear_intensity;
 
     if (direction == Direction::Front) {
         ESP_LOGI("control", "front");
         #ifndef USING_FIXED_LED_COLORS
-            led_white_set(LEDC_FRONT_CHANNEL, WHITE_MAX_INTENSITY);
-            led_white_set(LEDC_REAR_CHANNEL, 0);
+            new_front_intensity = WHITE_MAX_INTENSITY;
+            new_rear_intensity = 0;
+            
             led_rgb_set_animation(LedRgbType::front, &null_animation_front_rear);
             led_rgb_set_animation(LedRgbType::rear, &larson_animation);
         #else
-            led_white_set(LEDC_FRONT_CHANNEL, WHITE_MAX_INTENSITY);
-            led_white_set(LEDC_REAR_CHANNEL, WHITE_MAX_INTENSITY);
+            new_front_intensity = WHITE_MAX_INTENSITY;
+            new_rear_intensity = WHITE_MAX_INTENSITY;
         #endif
     } else if (direction == Direction::Back) {
         ESP_LOGI("control", "rear");
         #ifndef USING_FIXED_LED_COLORS
+            new_front_intensity = 0;
+            new_rear_intensity = WHITE_MAX_INTENSITY;
             led_white_set(LEDC_FRONT_CHANNEL, 0);
             led_white_set(LEDC_REAR_CHANNEL, WHITE_MAX_INTENSITY);
             led_rgb_set_animation(LedRgbType::front, &larson_animation);
             led_rgb_set_animation(LedRgbType::rear, &null_animation_front_rear);
         #else
-            led_white_set(LEDC_FRONT_CHANNEL, WHITE_MAX_INTENSITY);
-            led_white_set(LEDC_REAR_CHANNEL, WHITE_MAX_INTENSITY);
+            new_front_intensity = WHITE_MAX_INTENSITY;
+            new_rear_intensity = WHITE_MAX_INTENSITY;
         #endif
 
 
     } else if (direction == Direction::Stoppped) {
         ESP_LOGI("control", "stoped");
-        led_white_set(LEDC_FRONT_CHANNEL, 0);
-        led_white_set(LEDC_REAR_CHANNEL, 0);
+        new_front_intensity = 0;
+        new_rear_intensity = 0;
         led_rgb_set_animation(LedRgbType::front, &null_animation_front_rear);
         led_rgb_set_animation(LedRgbType::rear, &null_animation_front_rear);
     }
+
+    static uint32_t front_intensity_smoothed = 0;
+    static uint32_t rear_intensity_smoothed = 0;
+
+    const float smoothing_factor = 0.1;
+
+    front_intensity_smoothed = new_front_intensity * smoothing_factor + front_intensity_smoothed * (1-smoothing_factor); 
+    rear_intensity_smoothed = new_rear_intensity * smoothing_factor + rear_intensity_smoothed * (1-smoothing_factor); 
+
+    led_white_set(LEDC_FRONT_CHANNEL, front_intensity_smoothed);
+    led_white_set(LEDC_REAR_CHANNEL, rear_intensity_smoothed);
+
 }
 
 
