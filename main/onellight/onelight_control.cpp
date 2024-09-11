@@ -40,7 +40,7 @@ enum class Direction{Front, Back, Stoppped};
 
 
 Direction detect_direction(can_status_msg * msg){
-    static constexpr uint32_t DIRECTION_SMOOTHING_TIME = 500;
+    static constexpr uint32_t DIRECTION_SMOOTHING_TIME = pdMS_TO_TICKS(250);
 
     Direction apparent_direction =  Direction::Stoppped;
     if (msg->duty == 0.0 || msg->current == 0.0) apparent_direction = Direction::Stoppped;
@@ -49,7 +49,7 @@ Direction detect_direction(can_status_msg * msg){
     
     static Direction direction = Direction::Stoppped;
     static Direction new_direction = Direction::Stoppped;
-    uint32_t new_direction_change_time = 0;
+    static uint32_t new_direction_change_time = 0;
 
 
     // detected direction is different that last detected change
