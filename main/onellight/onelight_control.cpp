@@ -61,7 +61,7 @@ Direction detect_direction(can_status_msg * msg){
 
     if (new_direction != direction && (xTaskGetTickCount() - new_direction_change_time) >= DIRECTION_SMOOTHING_TIME){
         direction = new_direction;
-        new_direction_change_time = xTaskGetTickCount();
+        //new_direction_change_time = xTaskGetTickCount();
     }
 
     return direction;
@@ -84,8 +84,8 @@ void handle_status_operational(){
     auto direction = detect_direction(msg);
     
 
-    uint32_t new_front_intensity;
-    uint32_t new_rear_intensity;
+    float new_front_intensity = 0;
+    float new_rear_intensity = 0;
 
     if (direction == Direction::Front) {
         ESP_LOGI("control", "front");
@@ -122,13 +122,13 @@ void handle_status_operational(){
         led_rgb_set_animation(LedRgbType::rear, &null_animation_front_rear);
     }
 
-    static uint32_t front_intensity_smoothed = 0;
-    static uint32_t rear_intensity_smoothed = 0;
+    static float front_intensity_smoothed = 0;
+    static float rear_intensity_smoothed = 0;
 
     const float smoothing_factor = 0.1;
 
-    front_intensity_smoothed = new_front_intensity * smoothing_factor + front_intensity_smoothed * (1-smoothing_factor); 
-    rear_intensity_smoothed = new_rear_intensity * smoothing_factor + rear_intensity_smoothed * (1-smoothing_factor); 
+    front_intensity_smoothed = new_front_intensity * smoothing_factor + front_intensity_smoothed * (1.0f-smoothing_factor); 
+    rear_intensity_smoothed = new_rear_intensity * smoothing_factor + rear_intensity_smoothed * (1.0f-smoothing_factor); 
 
     led_white_set(LEDC_FRONT_CHANNEL, front_intensity_smoothed);
     led_white_set(LEDC_REAR_CHANNEL, rear_intensity_smoothed);
