@@ -104,8 +104,7 @@ void handle_status_operational(){
         #ifndef USING_FIXED_LED_COLORS
             new_front_intensity = 0;
             new_rear_intensity = WHITE_MAX_INTENSITY;
-            led_white_set(LEDC_FRONT_CHANNEL, 0);
-            led_white_set(LEDC_REAR_CHANNEL, WHITE_MAX_INTENSITY);
+            
             led_rgb_set_animation(LedRgbType::front, &larson_animation);
             led_rgb_set_animation(LedRgbType::rear, &null_animation_front_rear);
         #else
