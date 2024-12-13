@@ -13,6 +13,8 @@ extern "C"{
     #include "soc/spi_periph.h"
     #include "esp_rom_gpio.h"
     #include "soc/io_mux_reg.h"
+    #include "soc/gpio_periph.h"
+    #include "hal/gpio_hal.h"
 }
 
 
@@ -48,10 +50,14 @@ static led_strip_handle_t handle;
 
 void update_strip(uint8_t strip_gpio, Animation & animation){
     // connect GPIO of current led strip to SPI, update, then connect it back to GPIO output
-    gpio_iomux_out(strip_gpio, SPI2_FUNC_NUM, false);
+    esp_rom_gpio_connect_out_signal(strip_gpio, spi_periph_signal[SPI2_HOST].spid_out, false, false);
+    esp_rom_gpio_connect_in_signal(strip_gpio, spi_periph_signal[SPI2_HOST].spid_in, false);
+    gpio_hal_iomux_func_sel(GPIO_PIN_MUX_REG[strip_gpio], PIN_FUNC_GPIO);
+
     animation.update(handle);
     ESP_ERROR_CHECK(led_strip_refresh(handle));
-    gpio_iomux_out(strip_gpio, PIN_FUNC_GPIO, false);
+    
+    esp_rom_gpio_connect_out_signal(strip_gpio, SIG_GPIO_OUT_IDX, false, false);
 }
 
 void led_rgb_init(){
